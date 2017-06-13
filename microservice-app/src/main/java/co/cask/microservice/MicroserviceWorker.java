@@ -254,7 +254,7 @@ public class MicroserviceWorker extends AbstractWorker {
               }
               messageId.set(message.getId());
             } catch (MicroserviceException e) {
-              LOG.warn(e.getMessage());
+              LOG.warn(e.getMessage(), e);
               if (errorCount > 10) {
                 stop.set(true);
                 metrics.count(getMetricName("error"), 1);
