@@ -52,8 +52,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * This class implements the container for Microservice.
- * This is implemented as {@link co.cask.cdap.api.worker.Worker} within CDAP.
+ * Implementation of a Reactive Microservice within a container provided for runtime by {@link AbstractWorker}
+ * and the Persistent queues provided by TMS.
  */
 public class MicroserviceWorker extends AbstractWorker {
   private static final Logger LOG = LoggerFactory.getLogger(MicroserviceWorker.class);
@@ -201,18 +201,15 @@ public class MicroserviceWorker extends AbstractWorker {
   @Override
   public void run() {
     try {
+
       service.start(microserviceContext);
       Endpoints endpoints = definition.getConfiguration().getEndpoints();
       if (fetcher != null && endpoints.getInbound().size() > 0) {
-        consumeLoop(getContext().getNamespace(), endpoints.getInbound(), endpoints.getOutbound());
+        consumeLoop(endpoints.getInbound(), endpoints.getOutbound());
       } else if (publisher != null && endpoints.getOutbound().size() > 0){
         produceLoop();
-      } else {
-        LOG.error("Microservice configuration does not specify either inbound or outbound queues. Terminating.");
       }
-      LOG.info("Stopping microservice '{}'", definition.getId());
       service.stop();
-      LOG.info("Stopped microservice '{}'", definition.getId());
     } catch (MicroserviceException e) {
       LOG.error("Microservice '{}' unexpectedly terminated. {}", definition.getId(), e);
     }
@@ -227,7 +224,8 @@ public class MicroserviceWorker extends AbstractWorker {
     stop.set(true);
   }
 
-  private void consumeLoop(String namespace, List<String> inbounds, List<String> outbounds) {
+  private void consumeLoop(List<String> inbounds, List<String> outbounds) {
+    String namespace = getContext().getNamespace();
     final String inBoundTopic = inbounds.get(0);
     String outBoundTopic = null;
     if (outbounds.size() > 0) {
@@ -270,6 +268,8 @@ public class MicroserviceWorker extends AbstractWorker {
       } catch (IOException e) {
         metrics.count(getMetricName("io.error"), 1);
         LOG.error(e.getMessage());
+      } finally {
+        saveMessageId();
       }
     }
   }
@@ -303,8 +303,13 @@ public class MicroserviceWorker extends AbstractWorker {
       } catch (MicroserviceException e) {
         metrics.count(getMetricName("microservice.error"), 1);
         LOG.error(e.getMessage());
+      } finally {
+        saveMessageId();
       }
     }
+  }
+
+  private void saveMessageId() {
   }
 
   private String getMetricName(String name) {

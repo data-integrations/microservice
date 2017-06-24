@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>microservice-api</artifactId>
-  <name>Microservice APIs</name>
-  <description>Collection of APIs for building Microservice.</description>
+  <name>Reactive Microservice APIs</name>
+  <description>APIs for building Reactive Microservice.</description>
 
 </project>

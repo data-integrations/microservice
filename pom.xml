@@ -7,8 +7,8 @@
     <groupId>co.cask</groupId>
     <artifactId>microservice</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Microservice Framework built over CDAP</name>
-    <description>A Framework for building microservice over CDAP.</description>
+    <name>Reactive Microservice Framework</name>
+    <description>A framework for building Reactive Microservice.</description>
     <packaging>pom</packaging>
 
     <modules>

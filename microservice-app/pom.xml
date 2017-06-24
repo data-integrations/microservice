@@ -10,8 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>microservice-app</artifactId>
-  <name>Microservice Application</name>
-  <description>Microservice CDAP Application built over Worker.</description>
+  <name>Reactive Microservice Application</name>
+  <description>Reactive Microservice Application using Worker container.</description>
 
   <dependencies>
     <dependency>
